@@ -4,5 +4,5 @@ RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
 EXPOSE 8080
-ADD target/Connectify.jar Connectify.jar
+COPY --from=build target/Connectify.jar Connectify.jar
 ENTRYPOINT ["java","-jar","/Connectify.jar"]
