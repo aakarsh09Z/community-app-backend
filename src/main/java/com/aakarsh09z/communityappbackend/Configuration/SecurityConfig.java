@@ -1,5 +1,6 @@
 package com.aakarsh09z.communityappbackend.Configuration;
 
+import com.aakarsh09z.communityappbackend.Security.CustomUserDetailsService;
 import com.aakarsh09z.communityappbackend.Security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private  final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    private final CustomUserDetailsService customUserDetailsService;
     @Bean
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
@@ -38,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize)->authorize
                         .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
                         .anyRequest().authenticated()
-
+//                        .and().oauth2Login()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -54,12 +55,12 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider(){
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setUserDetailsService(this.customUserDetailService);
-//        provider.setPasswordEncoder(passwordEncoder());
-//        return provider;
-//    }
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(this.customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
 }

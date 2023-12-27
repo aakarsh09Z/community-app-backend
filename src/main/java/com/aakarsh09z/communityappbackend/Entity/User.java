@@ -18,18 +18,24 @@ import java.util.Collection;
 @Table(name = "_user_")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String username;
-    @Column(nullable = false, unique = true)
+    private String userId;
     private String fullname;
+    @Column(nullable = false, unique = true)
     private String email;
     private String password;
     private Boolean isVerified;
+    private String profileImage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 
     @Override

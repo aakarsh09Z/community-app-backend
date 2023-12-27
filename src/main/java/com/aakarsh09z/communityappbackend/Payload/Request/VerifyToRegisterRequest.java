@@ -15,7 +15,7 @@ import lombok.Setter;
 public class VerifyToRegisterRequest {
     @Email
     private String email;
-    @Min(value=100000, message="OTP should be 6 digit number")
-    @Digits(message="OTP should be 6 digit number", fraction = 0, integer = 6)
+    @Min(value=1000, message="OTP should be 4 digit number")
+    @Digits(message="OTP should be 4 digit number", fraction = 0, integer = 4)
     private String otp;
 }

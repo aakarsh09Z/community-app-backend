@@ -3,7 +3,6 @@ package com.aakarsh09z.communityappbackend.Service.Impl;
 import com.aakarsh09z.communityappbackend.Configuration.AppConstants;
 import com.aakarsh09z.communityappbackend.Entity.OtpEntity;
 import com.aakarsh09z.communityappbackend.Entity.User;
-import com.aakarsh09z.communityappbackend.Exceptions.ResourceNotFoundException;
 import com.aakarsh09z.communityappbackend.Payload.Request.*;
 import com.aakarsh09z.communityappbackend.Payload.Response.ApiResponse;
 import com.aakarsh09z.communityappbackend.Payload.Response.JwtTokenResponse;
@@ -14,13 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 @RequiredArgsConstructor
@@ -36,12 +32,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public ResponseEntity<?> register(RegisterRequest request){
         User user=new User();
         if(userRepository.findByEmail(request.getEmail()).isEmpty()){
-            var username=userRepository.findByUsername(request.getUsername());
-            if(username.isPresent() && username.orElseThrow().getIsVerified()){
+            var userId=userRepository.findByUserId(request.getUserId());
+            if(userId.isPresent() && userId.orElseThrow().getIsVerified()){
                 return new ResponseEntity<>(new ApiResponse("This username is already taken",false),HttpStatus.CONFLICT);
             }
             user.setFullname(request.getFullname());
-            user.setUsername(request.getUsername());
+            user.setUserId(request.getUserId());
             user.setEmail(request.getEmail());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setIsVerified(false);
@@ -53,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return new ResponseEntity<>(new ApiResponse("User already registered",false),HttpStatus.CONFLICT);
             }
             user.setFullname(request.getFullname());
-            user.setUsername(request.getUsername());
+            user.setUserId(request.getUserId());
             user.setEmail(request.getEmail());
             user.setPassword((request.getPassword()));
             user.setIsVerified(false);
@@ -93,7 +89,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JwtTokenResponse response = this.jwtTokenGenerator.generateToken(request.getEmail());
         user.setIsVerified(true);
         userRepository.save(user);
-        response.setUsername(user.getUsername());
+        response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -120,7 +116,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new ResponseEntity<>(new ApiResponse("Invalid Credentials",false),HttpStatus.UNAUTHORIZED);
         }
         JwtTokenResponse response = this.jwtTokenGenerator.generateToken(request.getEmail());
-        response.setUsername(user.getUsername());
+        response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
