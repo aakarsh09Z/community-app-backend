@@ -2,6 +2,7 @@ package com.aakarsh09z.communityappbackend.Controller;
 
 import com.aakarsh09z.communityappbackend.Payload.Request.*;
 import com.aakarsh09z.communityappbackend.Service.AuthenticationService;
+import com.aakarsh09z.communityappbackend.Service.JwtTokenGenerator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final AuthenticationService authenticationService;
     @GetMapping("/test")
     public String test(){
@@ -43,5 +45,9 @@ public class AuthenticationController {
     @PostMapping("/resend-otp")
     public ResponseEntity<?> resendOtp(@RequestBody ForgotPasswordRequest request){
         return this.authenticationService.resendOtp(request);
+    }
+    @GetMapping("/regenerateToken")
+    public ResponseEntity<?> refreshToken(@RequestParam String token) {
+        return this.jwtTokenGenerator.generateRefreshToken(token);
     }
 }

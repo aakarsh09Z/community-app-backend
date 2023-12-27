@@ -8,7 +8,7 @@ import java.util.Random;
 @Service
 public class GenerateOtp {
     private static final String CHARACTERS = "123456789";
-    private static final int OTP_LENGTH = 6;
+    private static final int OTP_LENGTH = 4;
 
     public static String generateOtp() {
         Random random = new Random();
