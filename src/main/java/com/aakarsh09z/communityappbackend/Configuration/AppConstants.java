@@ -5,4 +5,6 @@ public class AppConstants {
     public static final long JWT_ACCESS_TOKEN_VALIDITY = 24 * 60 *60; //30 sec
     public static final long JWT_REFRESH_TOKEN_VALIDITY = 100 * 24 * 60 *60; //2 min
     public static final int OTP_EXPIRATION_MINUTE=100000;
+    public static final String path = "https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/images/";
+    public static final String avatarPath = "https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/";
 }

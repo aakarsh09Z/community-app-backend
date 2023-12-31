@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtHelper {public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+public class JwtHelper {
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);

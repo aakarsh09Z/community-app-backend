@@ -1,13 +1,11 @@
 package com.aakarsh09z.communityappbackend.Service;
 
+import com.aakarsh09z.communityappbackend.Configuration.AppConstants;
 import com.aakarsh09z.communityappbackend.Entity.User;
 import com.aakarsh09z.communityappbackend.Payload.Response.ApiResponse;
 import com.aakarsh09z.communityappbackend.Repository.UserRepository;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -31,18 +31,26 @@ public class StorageService {
     private final UserRepository userRepository;
     //upload file
     public String uploadFile(String email,MultipartFile file){
+        String imagePath=bucketName+"/resources/images";
         User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(("user not found in database")+email));
         File fileObj = convertMultiPartFileToFile(file);
+//        String previousImage=user.getProfileImageUrl();
+//        previousImage=previousImage.substring(previousImage.lastIndexOf('/'));
+//        if (previousImage) {
+//            s3Client.deleteObject(imagePath, previousImage);
+//        }
         String filename=user.getUserId()+getFileExtension(file.getOriginalFilename());
-        s3Client.putObject(new PutObjectRequest(bucketName,filename,fileObj));
+        s3Client.putObject(new PutObjectRequest(imagePath,filename,fileObj));
         fileObj.delete();
-        user.setProfileImage(filename);
+        String path= AppConstants.path+filename;
+        user.setProfileImageUrl(path);
         userRepository.save(user);
         return "File uploaded: "+filename;
     }
     //download file
     public byte[] downloadFile(String fileName) {
-        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+        String imagePath=bucketName+"/resources/images";
+        S3Object s3Object = s3Client.getObject(imagePath, fileName);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         byte[] content;
         try {
@@ -55,13 +63,38 @@ public class StorageService {
     }
     //delete file from bucket
     public ResponseEntity<?> deleteFile(String filename){
+        String imagePath=bucketName+"/resources/images";
         if (fileExists(filename)) {
-            s3Client.deleteObject(bucketName, filename);
+            s3Client.deleteObject(imagePath, filename);
             return new ResponseEntity<>(new ApiResponse(filename + " has been deleted",true), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new ApiResponse(filename + " does not exist",false),HttpStatus.CONFLICT);
         }
     }
+    public ResponseEntity<?> getAvatars(){
+//        String avatarPath=bucketName+"/resources/avatars/";
+//        ListObjectsV2Request request = new ListObjectsV2Request()
+//                .withBucketName(avatarPath);
+//        ListObjectsV2Result response = s3Client.listObjectsV2(request);
+//        List<String> imageNames = new ArrayList<>();
+//        for (S3ObjectSummary objectSummary : response.getObjectSummaries()) {
+//            if (objectSummary.getKey()!=null) {
+//                String imageName = objectSummary.getKey().substring(avatarPath.length());
+//                imageNames.add(imageName);
+//            }
+//        }
+        List<String> imageNames=new ArrayList<>();
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+1.png");
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+2.png");
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+3.png");
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+4.png");
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+5.png");
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+6.png");
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/None.png");
+        return new ResponseEntity<>(imageNames,HttpStatus.OK);
+    }
+
+
 
     private File convertMultiPartFileToFile(MultipartFile file){
         File convertedFile = new File(Objects.requireNonNull(file.getOriginalFilename()));

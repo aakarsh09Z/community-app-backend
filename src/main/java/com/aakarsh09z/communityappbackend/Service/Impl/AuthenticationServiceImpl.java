@@ -91,7 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
-        response.setProfileImage(user.getProfileImage());
+        response.setProfileImageUrl(user.getProfileImageUrl());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
@@ -117,7 +117,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JwtTokenResponse response = this.jwtTokenGenerator.generateToken(request.getEmail());
         response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
-        response.setProfileImage(user.getProfileImage());
+        response.setProfileImageUrl(user.getProfileImageUrl());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

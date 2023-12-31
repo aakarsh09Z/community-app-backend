@@ -39,4 +39,8 @@ public class StorageController {
     public ResponseEntity<?> deleteImage(@PathVariable String filename){
         return this.storageService.deleteFile(filename);
     }
+    @GetMapping("/auth/getAvatars")
+    public ResponseEntity<?> getAvatars(){
+        return this.storageService.getAvatars();
+    }
 }
