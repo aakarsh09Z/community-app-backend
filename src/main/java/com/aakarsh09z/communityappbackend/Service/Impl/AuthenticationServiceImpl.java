@@ -121,6 +121,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+
     public ResponseEntity<?> forgot_password(ForgotPasswordRequest request){
         //if email is not registered
         if(userRepository.findByEmail(request.getEmail()).isEmpty()){
