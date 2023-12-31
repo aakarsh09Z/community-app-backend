@@ -91,6 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
+        response.setProfileImage(user.getProfileImage());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
@@ -99,10 +100,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new ResponseEntity<>(new ApiResponse("Enter email or username",false),HttpStatus.BAD_REQUEST);
         }
 
-        System.out.println(request.toString());
-        User user;
 //        if(userRepository.findByEmail(request.getEmail()).isPresent())
-            user= userRepository.findByEmail(request.getEmail()).orElseThrow();
+        User user= userRepository.findByEmail(request.getEmail()).orElseThrow();
 //        else
 //            user=userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new ResourceNotFoundException(request.getUsername(), "Email: " + request.getEmail(), 0));
 //        System.out.println(user);
@@ -118,8 +117,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JwtTokenResponse response = this.jwtTokenGenerator.generateToken(request.getEmail());
         response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
+        response.setProfileImage(user.getProfileImage());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
 
     public ResponseEntity<?> forgot_password(ForgotPasswordRequest request){
         //if email is not registered
