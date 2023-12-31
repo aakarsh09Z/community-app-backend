@@ -99,9 +99,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(request.getEmail()==null && request.getPassword()==null){
             return new ResponseEntity<>(new ApiResponse("Enter email or username",false),HttpStatus.BAD_REQUEST);
         }
-        User user;
+
 //        if(userRepository.findByEmail(request.getEmail()).isPresent())
-            user= userRepository.findByEmail(request.getEmail()).orElseThrow();
+        User user= userRepository.findByEmail(request.getEmail()).orElseThrow();
 //        else
 //            user=userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new ResourceNotFoundException(request.getUsername(), "Email: " + request.getEmail(), 0));
 //        System.out.println(user);
