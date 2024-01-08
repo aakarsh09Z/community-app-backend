@@ -32,12 +32,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public ResponseEntity<?> register(RegisterRequest request){
         User user=new User();
         if(userRepository.findByEmail(request.getEmail()).isEmpty()){
-            var userId=userRepository.findByUserId(request.getUserId());
-            if(userId.isPresent() && userId.orElseThrow().getIsVerified()){
-                return new ResponseEntity<>(new ApiResponse("This username is already taken",false),HttpStatus.CONFLICT);
-            }
+//            var userId=userRepository.findByUserId(request.getUserId());
+//            if(userId.isPresent() && userId.orElseThrow().getIsVerified()){
+//                return new ResponseEntity<>(new ApiResponse("This username is already taken",false),HttpStatus.CONFLICT);
+//            }
             user.setFullname(request.getFullname());
-            user.setUserId(request.getUserId());
             user.setEmail(request.getEmail());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setIsVerified(false);
@@ -49,7 +48,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return new ResponseEntity<>(new ApiResponse("User already registered",false),HttpStatus.CONFLICT);
             }
             user.setFullname(request.getFullname());
-            user.setUserId(request.getUserId());
             user.setEmail(request.getEmail());
             user.setPassword((request.getPassword()));
             user.setIsVerified(false);
@@ -91,7 +89,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
-        response.setProfileImage(user.getProfileImage());
+        response.setProfileImage(user.getProfileImageUrl());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
@@ -117,7 +115,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JwtTokenResponse response = this.jwtTokenGenerator.generateToken(request.getEmail());
         response.setUserId(user.getUserId());
         response.setEmail(request.getEmail());
-        response.setProfileImage(user.getProfileImage());
+        response.setProfileImage(user.getProfileImageUrl());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

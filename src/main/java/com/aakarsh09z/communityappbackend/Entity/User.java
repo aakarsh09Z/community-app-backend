@@ -26,7 +26,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private Boolean isVerified;
-    private String profileImage;
+    private String profileImageUrl;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
