@@ -12,11 +12,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
-    private String userId;
-    @NotEmpty(message="Email must be filled")
+public class SelectAvatarRequest {
+    @NotEmpty
     @Email(regexp="[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",flags = Pattern.Flag.CASE_INSENSITIVE,message = "Invalid email format")
     private String email;
-    @NotEmpty(message="Password must be filled")
-    private String password;
+    @NotEmpty(message = "Username field is required")
+    private String userId;
+    @NotEmpty(message = "profileImageUrl cannot be empty")
+    private String profileImageUrl;
 }
