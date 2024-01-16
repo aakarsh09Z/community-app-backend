@@ -19,7 +19,7 @@ public class StorageController {
         if (!file.getContentType().equals("image/png") && !file.getContentType().equals("image/jpg") && !file.getContentType().equals("image/jpeg")) {
             return new ResponseEntity<>(new ApiResponse("File should be of type JPG/JPEG/PNG", false), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
-        return this.storageService.uploadFile(email,userId,file);
+        return new ResponseEntity<>(new ApiResponse(this.storageService.uploadFile(email,userId,file),true),HttpStatus.OK);
     }
     @GetMapping("/auth/downloadImage/{filename}")
     public ResponseEntity<?> downloadImage(@PathVariable String filename){
@@ -38,9 +38,5 @@ public class StorageController {
     @DeleteMapping("/auth/deleteImage/{filename}")
     public ResponseEntity<?> deleteImage(@PathVariable String filename){
         return this.storageService.deleteFile(filename);
-    }
-    @GetMapping("/auth/getAvatars")
-    public ResponseEntity<?> getAvatars(){
-        return this.storageService.getAvatars();
     }
 }

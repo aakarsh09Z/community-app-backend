@@ -17,12 +17,4 @@ public class EmailService {
         message.setFrom("bitebliss.app@gmail.com");
         javaMailSender.send(message);
     }
-    public void sendPasswordEmail(String toEmail, String Password){
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("New Password");
-        message.setText("Your password for direct login is: " + Password);
-        message.setFrom("bitebliss.app@gmail.com");
-        javaMailSender.send(message);
-    }
 }

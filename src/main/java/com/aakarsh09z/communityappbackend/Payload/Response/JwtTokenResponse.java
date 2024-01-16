@@ -14,6 +14,5 @@ public class JwtTokenResponse {
     private String refreshToken;
     private String userId;
     private String email;
-    private String profileImageUrl;
-    private Boolean success;
+    private String profileImage;
 }

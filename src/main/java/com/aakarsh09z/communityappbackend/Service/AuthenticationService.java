@@ -11,6 +11,4 @@ public interface AuthenticationService {
     public ResponseEntity<?> verifyToResetPassword(VerifyToResetPasswordRequest request);
     public ResponseEntity<?> resetPassword(ResetPasswordRequest request);
     public ResponseEntity<?> resendOtp(ForgotPasswordRequest request);
-    public ResponseEntity<?> selectAvatar(SelectAvatarRequest request);
-    public ResponseEntity<?>oauthGoogle(String Token);
 }
