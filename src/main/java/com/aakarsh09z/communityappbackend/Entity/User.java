@@ -9,13 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_user_")
+@Table(name = "user")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +28,8 @@ public class User implements UserDetails {
     private String password;
     private Boolean isVerified;
     private String profileImageUrl;
+    @ManyToMany(mappedBy = "members")
+    private List<Community> communities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

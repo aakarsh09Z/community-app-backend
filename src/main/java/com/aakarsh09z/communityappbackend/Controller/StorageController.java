@@ -15,11 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageController {
     private final StorageService storageService;
     @PostMapping("/auth/uploadImage")
-    public ResponseEntity<?> uploadImage(@RequestParam String email, @RequestParam MultipartFile file) {
+    public ResponseEntity<?> uploadImage(@RequestParam String email,@RequestParam String userId, @RequestParam MultipartFile file) {
         if (!file.getContentType().equals("image/png") && !file.getContentType().equals("image/jpg") && !file.getContentType().equals("image/jpeg")) {
             return new ResponseEntity<>(new ApiResponse("File should be of type JPG/JPEG/PNG", false), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
-        return new ResponseEntity<>(new ApiResponse(this.storageService.uploadFile(email,file),true),HttpStatus.OK);
+        return this.storageService.uploadFile(email,userId,file);
     }
     @GetMapping("/auth/downloadImage/{filename}")
     public ResponseEntity<?> downloadImage(@PathVariable String filename){
