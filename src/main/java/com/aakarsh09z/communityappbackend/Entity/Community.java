@@ -33,4 +33,7 @@ public class Community {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> members;
+    @JsonIgnore
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Channel> channels;
 }

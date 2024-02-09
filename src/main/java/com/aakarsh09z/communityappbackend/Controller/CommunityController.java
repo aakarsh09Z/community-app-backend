@@ -21,8 +21,8 @@ public class CommunityController {
         return this.communityService.createCommunity(name, description, file);
     }
 
-    @GetMapping("/members")
-    public ResponseEntity<?> getAllMembersInCommunity(@RequestParam Long communityId,
+    @GetMapping("/{communityId}/members")
+    public ResponseEntity<?> getAllMembersInCommunity(@PathVariable Long communityId,
                                                       @PageableDefault(page = 0, size = 10) Pageable pageable) {
         return this.communityService.getAllMembersInCommunity(communityId, pageable);
     }
@@ -32,8 +32,8 @@ public class CommunityController {
         return this.communityService.getAllCommunitiesWithPagination(pageable);
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<?> joinCommunity(@RequestParam Long communityId) {
+    @PostMapping("/join/{communityId}")
+    public ResponseEntity<?> joinCommunity(@PathVariable Long communityId) {
         return this.communityService.joinCommunity(communityId);
     }
 }

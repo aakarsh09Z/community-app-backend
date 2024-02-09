@@ -40,7 +40,6 @@ public class CommunityServiceImpl implements CommunityService {
     private final UserRepository userRepository;
     private final AmazonS3 s3Client;
     private final CommunityMemberRepository communityMemberRepository;
-    private final EntityManager entityManager;
     @Transactional
     public ResponseEntity<?> createCommunity(String name, String description, MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -102,8 +101,7 @@ public class CommunityServiceImpl implements CommunityService {
         communityMemberRepository.save(communityMember);
         return new ResponseEntity<>(new ApiResponse("Joined "+community.getName(),true),HttpStatus.OK);
     }
-
-    //================================================================================================================================
+    //==================================================================================================================================================
     private File convertMultiPartFileToFile(MultipartFile file){
         File convertedFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         try(FileOutputStream fos = new FileOutputStream((convertedFile))){

@@ -1,5 +1,6 @@
 package com.aakarsh09z.communityappbackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
+@Table(name = "_user_")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,7 +31,11 @@ public class User implements UserDetails {
     private String profileImageUrl;
     @ManyToMany(mappedBy = "members")
     private List<Community> communities;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Chat> sentMessages;
+    @ManyToMany(mappedBy = "seenByUsers")
+    private List<Chat> seenMessages;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
