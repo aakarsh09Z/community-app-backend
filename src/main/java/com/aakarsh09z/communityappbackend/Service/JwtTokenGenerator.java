@@ -45,7 +45,6 @@ public class JwtTokenGenerator {
 //    }
     public JwtTokenResponse generateToken(String email){
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
-        System.out.println(userDetails);
         String myAccessToken = this.jwtHelper.generateAccessToken(userDetails);
         String myRefreshToken = this.jwtHelper.generateRefreshToken(userDetails);
         JwtTokenResponse response = new JwtTokenResponse();
@@ -76,7 +75,7 @@ public class JwtTokenGenerator {
                     User user = userRepository.findByEmail(newUsername).orElseThrow(() -> new NoSuchElementException("User does not exist :"+ newUsername));
                     if (this.jwtHelper.validateRefreshToken(token, userDetails)) {
                         String accessToken = this.jwtHelper.generateAccessToken(userDetails);
-                        return new ResponseEntity<>(new JwtAccessTokenResponse(accessToken, user.getFullname(), newUsername),OK);
+                        return new ResponseEntity<>(new JwtAccessTokenResponse(accessToken, user.getFullname(), newUsername,true),OK);
                     }
                     else {
                         return new ResponseEntity<>(new ApiResponse("Refresh Token Expired!!", false), HttpStatus.REQUEST_TIMEOUT);

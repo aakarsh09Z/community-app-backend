@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize)->authorize
+                                .requestMatchers(mvc.pattern("/**")).permitAll()
                         .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
                         .anyRequest().authenticated()
 //                        .and().oauth2Login()

@@ -1,8 +1,10 @@
 package com.aakarsh09z.communityappbackend.Service;
 
 import com.aakarsh09z.communityappbackend.Configuration.AppConstants;
+import com.aakarsh09z.communityappbackend.Entity.OtpEntity;
 import com.aakarsh09z.communityappbackend.Entity.User;
 import com.aakarsh09z.communityappbackend.Payload.Response.ApiResponse;
+import com.aakarsh09z.communityappbackend.Repository.OtpRepository;
 import com.aakarsh09z.communityappbackend.Repository.UserRepository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,8 +32,13 @@ public class StorageService {
     private String bucketName;
     private final AmazonS3 s3Client;
     private final UserRepository userRepository;
+    private final OtpRepository otpRepository;
+    private final EmailService emailService;
     //upload file
-    public String uploadFile(String email,MultipartFile file){
+    public ResponseEntity<?> uploadFile(String email,String userId,MultipartFile file){
+        if(userRepository.findByEmail(email).isEmpty()){
+            return new ResponseEntity<>(new ApiResponse("Email not registered",false),HttpStatus.CONFLICT);
+        }
         String imagePath=bucketName+"/resources/images";
         User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(("user not found in database")+email));
         File fileObj = convertMultiPartFileToFile(file);
@@ -39,13 +47,25 @@ public class StorageService {
 //        if (previousImage) {
 //            s3Client.deleteObject(imagePath, previousImage);
 //        }
-        String filename=user.getUserId()+getFileExtension(file.getOriginalFilename());
+        String filename=userId+getFileExtension(file.getOriginalFilename());
         s3Client.putObject(new PutObjectRequest(imagePath,filename,fileObj));
         fileObj.delete();
-        String path= AppConstants.path+filename;
+        String path= AppConstants.path+"images/"+filename;
+        user.setUserId(userId);
         user.setProfileImageUrl(path);
         userRepository.save(user);
-        return "File uploaded: "+filename;
+
+        String OTP= GenerateOtp.generateOtp();
+        LocalDateTime expirationTime=LocalDateTime.now().plusMinutes(AppConstants.OTP_EXPIRATION_MINUTE);
+
+        OtpEntity otpEntity = new OtpEntity();
+        otpEntity.setOtp(OTP);
+        otpEntity.setEmail(email);
+        otpEntity.setExpirationTime(expirationTime);
+        otpRepository.save(otpEntity);
+        emailService.sendOtpEmail(email,OTP);
+
+        return new ResponseEntity<>(new ApiResponse("Check your email for OTP",true),HttpStatus.OK);
     }
     //download file
     public byte[] downloadFile(String fileName) {
@@ -84,13 +104,13 @@ public class StorageService {
 //            }
 //        }
         List<String> imageNames=new ArrayList<>();
+        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/None.png");
         imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+1.png");
         imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+2.png");
         imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+3.png");
         imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+4.png");
         imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+5.png");
         imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/avatar+6.png");
-        imageNames.add("https://connectifystorage.s3.ap-south-1.amazonaws.com/resources/avatars/None.png");
         return new ResponseEntity<>(imageNames,HttpStatus.OK);
     }
 

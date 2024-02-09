@@ -1,5 +1,6 @@
 package com.aakarsh09z.communityappbackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Setter
@@ -27,7 +29,13 @@ public class User implements UserDetails {
     private String password;
     private Boolean isVerified;
     private String profileImageUrl;
-
+    @ManyToMany(mappedBy = "members")
+    private List<Community> communities;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Chat> sentMessages;
+    @ManyToMany(mappedBy = "seenByUsers")
+    private List<Chat> seenMessages;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
