@@ -13,18 +13,20 @@ import com.aakarsh09z.communityappbackend.Repository.PostRepository;
 import com.aakarsh09z.communityappbackend.Repository.UserRepository;
 import com.aakarsh09z.communityappbackend.Service.PostService;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.xray.model.Http;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -46,6 +48,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final RestTemplate restTemplate;
     @Transactional
     public ResponseEntity<?> createPost(String caption, Long communityId, MultipartFile file){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,16 +75,16 @@ public class PostServiceImpl implements PostService {
             return new ResponseEntity<>(new ApiResponse("Post not found with postID: "+postId,false),HttpStatus.BAD_REQUEST);
         }
         Post post=postRepository.findById(postId).orElseThrow(()-> new NoSuchElementException("Invalid postId: "+postId));
-//        System.out.println(extractPathAfterResources(post.getContent()));
+        System.out.println(extractPathAfterResources(post.getContent()));
         if(!currentUser.equals(post.getOwner())){
             return new ResponseEntity<>(new ApiResponse("This user is not the owner of post",false),HttpStatus.CONFLICT);
         }
         //Delete from s3 bucket
-//        try {
-//            s3Client.deleteObject(bucketName,extractPathAfterResources(post.getContent()));
-//        } catch (AmazonS3Exception e) {
-//            return new ResponseEntity<>(new ApiResponse("Failed to delete file from S3: " + e.getMessage(), false), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
+        try {
+            deleteS3Object(bucketName,extractPathAfterResources(post.getContent()));
+        } catch (AmazonS3Exception e) {
+            return new ResponseEntity<>(new ApiResponse("Failed to delete file from S3: " + e.getMessage(), false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         postRepository.delete(post);
         return new ResponseEntity<>(new ApiResponse("Post deleted",true),HttpStatus.OK);
     }
@@ -266,5 +269,16 @@ public class PostServiceImpl implements PostService {
             return "resources/"+s3ObjectUrl.substring(index + "/resources/".length());
         }
         return null;
+    }
+    private void deleteS3Object(String bucketName, String key) {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        String url = "https://" + bucketName + ".s3.amazonaws.com/" + key;
+        ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Object deleted successfully");
+        } else {
+            System.out.println("Failed to delete object: " + response.getStatusCode());
+        }
     }
 }
