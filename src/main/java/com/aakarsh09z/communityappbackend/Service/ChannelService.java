@@ -1,6 +1,5 @@
 package com.aakarsh09z.communityappbackend.Service;
 
-import com.aakarsh09z.communityappbackend.Entity.Channel;
 import com.aakarsh09z.communityappbackend.Entity.User;
 import com.aakarsh09z.communityappbackend.Payload.Request.ChannelRequest;
 import com.aakarsh09z.communityappbackend.Payload.Response.ChatDto;

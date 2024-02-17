@@ -10,9 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChannelRequest {
-    @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
-    private String name;
-    private String type;
-    private Long communityId;
+public class CommentRequest {
+    @Size(min = 1, max = 1000, message = "Content must be between 1 and 1000 characters")
+    private String content;
+    private Long postId;
 }

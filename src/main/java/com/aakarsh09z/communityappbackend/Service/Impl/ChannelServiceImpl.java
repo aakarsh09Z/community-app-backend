@@ -39,7 +39,7 @@ public class ChannelServiceImpl implements ChannelService {
         Community community=communityRepository.findById(request.getCommunityId()).orElseThrow(()-> new NoSuchElementException("Community does not exist: "+request.getCommunityId()));
         //create new channel
         Channel channel=new Channel();
-        channel.setName(request.getName());
+        channel.setName(request.getName().trim());
         channel.setType(request.getType());
         channel.setCommunity(community);
         channelRepository.save(channel);

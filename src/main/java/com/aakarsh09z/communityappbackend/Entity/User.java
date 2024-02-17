@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Setter
@@ -34,8 +35,22 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Chat> sentMessages;
+    @JsonIgnore
     @ManyToMany(mappedBy = "seenByUsers")
     private List<Chat> seenMessages;
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner")
+    private List<Post> posts;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "likes")
+    private List<Post> likedPosts;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "savedByUsers")
+    private List<Post> savedPosts;
+    @JsonIgnore
+    @OneToMany(mappedBy = "commenter")
+    private List<Comment> comments;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -64,5 +79,18 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

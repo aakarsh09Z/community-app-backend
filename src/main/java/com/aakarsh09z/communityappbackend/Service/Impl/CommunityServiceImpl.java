@@ -46,8 +46,8 @@ public class CommunityServiceImpl implements CommunityService {
         User currentUser = (User) authentication.getPrincipal();
         Long adminId= currentUser.getId();
         Community community = new Community();
-        community.setName(name);
-        community.setDescription(description);
+        community.setName(name.trim());
+        community.setDescription(description.trim());
         community.setAdminId(adminId);
         community.setMembersNumber(1);
 

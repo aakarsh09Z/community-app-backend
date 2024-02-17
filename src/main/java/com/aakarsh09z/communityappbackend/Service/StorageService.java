@@ -42,11 +42,6 @@ public class StorageService {
         String imagePath=bucketName+"/resources/images";
         User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(("user not found in database")+email));
         File fileObj = convertMultiPartFileToFile(file);
-//        String previousImage=user.getProfileImageUrl();
-//        previousImage=previousImage.substring(previousImage.lastIndexOf('/'));
-//        if (previousImage) {
-//            s3Client.deleteObject(imagePath, previousImage);
-//        }
         String filename=userId+getFileExtension(file.getOriginalFilename());
         s3Client.putObject(new PutObjectRequest(imagePath,filename,fileObj));
         fileObj.delete();
