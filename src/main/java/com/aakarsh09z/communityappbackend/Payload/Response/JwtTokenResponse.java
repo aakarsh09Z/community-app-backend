@@ -15,4 +15,5 @@ public class JwtTokenResponse {
     private String userId;
     private String email;
     private String profileImageUrl;
+    private Boolean success;
 }

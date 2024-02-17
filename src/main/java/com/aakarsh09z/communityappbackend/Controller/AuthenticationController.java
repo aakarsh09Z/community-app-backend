@@ -3,10 +3,13 @@ package com.aakarsh09z.communityappbackend.Controller;
 import com.aakarsh09z.communityappbackend.Payload.Request.*;
 import com.aakarsh09z.communityappbackend.Service.AuthenticationService;
 import com.aakarsh09z.communityappbackend.Service.JwtTokenGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class AuthenticationController {
         return this.authenticationService.verifyToRegister(request);
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request){
         return this.authenticationService.login(request);
     }
     @PostMapping("/forgot-password")
@@ -49,5 +52,13 @@ public class AuthenticationController {
     @GetMapping("/regenerateToken")
     public ResponseEntity<?> refreshToken(@RequestParam String token) {
         return this.jwtTokenGenerator.generateRefreshToken(token);
+    }
+    @PostMapping("/selectAvatar")
+    public ResponseEntity<?> selectAvatar(@Valid @RequestBody SelectAvatarRequest request){
+        return this.authenticationService.selectAvatar(request);
+    }
+    @PostMapping("/oauthGoogle")
+    public ResponseEntity<?> oauthGoogle(@Valid @RequestParam String token) throws IOException, InterruptedException  {
+        return this.authenticationService.oauthGoogle(token);
     }
 }
