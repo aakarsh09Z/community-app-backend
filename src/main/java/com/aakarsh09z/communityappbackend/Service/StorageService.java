@@ -53,7 +53,6 @@ public class StorageService {
         String OTP= GenerateOtp.generateOtp();
         LocalDateTime expirationTime=LocalDateTime.now().plusMinutes(AppConstants.OTP_EXPIRATION_MINUTE);
 
-
         OtpEntity otpEntity = new OtpEntity();
         otpEntity.setOtp(OTP);
         otpEntity.setEmail(email);
