@@ -37,7 +37,6 @@ public class Chat {
     @ManyToOne
     @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "chat_message_seen",

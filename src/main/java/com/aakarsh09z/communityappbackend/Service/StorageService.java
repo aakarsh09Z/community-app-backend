@@ -9,6 +9,7 @@ import com.aakarsh09z.communityappbackend.Repository.UserRepository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +59,12 @@ public class StorageService {
         otpEntity.setEmail(email);
         otpEntity.setExpirationTime(expirationTime);
         otpRepository.save(otpEntity);
-        emailService.sendOtpEmail(email,OTP);
+        try {
+            emailService.sendOtpEmail(email, OTP);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ApiResponse("Failed to send OTP email", false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return new ResponseEntity<>(new ApiResponse("Check your email for OTP",true),HttpStatus.OK);
     }
