@@ -19,6 +19,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
@@ -169,7 +170,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         otpEntity.setEmail(request.getEmail());
         otpEntity.setExpirationTime(expirationTime);
         otpRepository.save(otpEntity);
-        emailService.sendOtpEmail(request.getEmail(), OTP);
+        try {
+            emailService.sendOtpEmail(request.getEmail(), OTP);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ApiResponse("Failed to send OTP email", false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(new ApiResponse("Check your email for OTP",true),HttpStatus.OK);
     }
     @Override
@@ -208,7 +214,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         otpEntity.setEmail(request.getEmail());
         otpEntity.setExpirationTime(expirationTime);
         otpRepository.save(otpEntity);
-        emailService.sendOtpEmail(request.getEmail(), OTP);
+        try {
+            emailService.sendOtpEmail(request.getEmail(), OTP);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ApiResponse("Failed to send OTP email", false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return new ResponseEntity<>(new ApiResponse("OTP resent",true),HttpStatus.OK);
     }
@@ -230,7 +241,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         otpEntity.setEmail(request.getEmail());
         otpEntity.setExpirationTime(expirationTime);
         otpRepository.save(otpEntity);
-        emailService.sendOtpEmail(request.getEmail(),OTP);
+        try {
+            emailService.sendOtpEmail(request.getEmail(), OTP);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ApiResponse("Failed to send OTP email", false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(new ApiResponse("Check your email for otp",true),HttpStatus.OK);
     }
     public ResponseEntity<?>oauthGoogle(String Token){

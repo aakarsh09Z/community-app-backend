@@ -9,6 +9,7 @@ import com.aakarsh09z.communityappbackend.Repository.UserRepository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,15 +43,10 @@ public class StorageService {
         String imagePath=bucketName+"/resources/images";
         User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(("user not found in database")+email));
         File fileObj = convertMultiPartFileToFile(file);
-//        String previousImage=user.getProfileImageUrl();
-//        previousImage=previousImage.substring(previousImage.lastIndexOf('/'));
-//        if (previousImage) {
-//            s3Client.deleteObject(imagePath, previousImage);
-//        }
         String filename=userId+getFileExtension(file.getOriginalFilename());
         s3Client.putObject(new PutObjectRequest(imagePath,filename,fileObj));
         fileObj.delete();
-        String path= AppConstants.path+filename;
+        String path= AppConstants.path+"images/"+filename;
         user.setUserId(userId);
         user.setProfileImageUrl(path);
         userRepository.save(user);
@@ -63,7 +59,12 @@ public class StorageService {
         otpEntity.setEmail(email);
         otpEntity.setExpirationTime(expirationTime);
         otpRepository.save(otpEntity);
-        emailService.sendOtpEmail(email,OTP);
+        try {
+            emailService.sendOtpEmail(email, OTP);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ApiResponse("Failed to send OTP email", false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return new ResponseEntity<>(new ApiResponse("Check your email for OTP",true),HttpStatus.OK);
     }

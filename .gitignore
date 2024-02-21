@@ -1,6 +1,6 @@
 # .gitignore
-application.properties
-config/application.properties
+#application.properties
+#config/application.properties
 
 HELP.md
 target/
@@ -36,5 +36,6 @@ build/
 ### VS Code ###
 .vscode/
 
-#env users
-application-dev.properties
+#security files
+#**/src/main/resources/application-dev.properties
+
